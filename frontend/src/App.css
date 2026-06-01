@@ -1,3 +1,10 @@
 body {
   font-family: Arial, sans-serif;
 }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  background-color: #f4f6f9;
+}
