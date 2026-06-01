@@ -75,7 +75,7 @@ A full-stack Inventory & Order Management System built using React, FastAPI, Pos
 
 ### Frontend
 
-https://inventory-order-management-system-e0zy119vc-a5bhisheks-projects.vercel.app/
+https://inventory-order-management-system-tau.vercel.app/
 
 ### Backend
 
