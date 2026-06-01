@@ -195,3 +195,8 @@ li {
     margin-bottom: 10px;
   }
 }
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
