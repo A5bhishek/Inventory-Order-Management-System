@@ -250,6 +250,17 @@ def create_order(
             detail="Customer not found"
         )
 
+    product_ids = [
+    item.product_id
+    for item in order.items
+    ]
+
+    if len(product_ids) != len(set(product_ids)):
+        raise HTTPException(
+            status_code=400,
+            detail="Duplicate products are not allowed in the same order"
+        )
+
     total_amount = 0
 
     new_order = Order(

@@ -4,16 +4,17 @@ import api from "../services/api";
 function Orders() {
 
   const [orders, setOrders] = useState([]);
-
   const [customers, setCustomers] = useState([]);
-
   const [products, setProducts] = useState([]);
 
   const [customerId, setCustomerId] = useState("");
 
-  const [productId, setProductId] = useState("");
-
-  const [quantity, setQuantity] = useState("");
+  const [items, setItems] = useState([
+    {
+      product_id: "",
+      quantity: ""
+    }
+  ]);
 
   useEffect(() => {
     fetchOrders();
@@ -31,13 +32,52 @@ function Orders() {
   };
 
   const fetchCustomers = async () => {
-    const res = await api.get("/customers");
-    setCustomers(res.data);
+    try {
+      const res = await api.get("/customers");
+      setCustomers(res.data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const fetchProducts = async () => {
-    const res = await api.get("/products");
-    setProducts(res.data);
+    try {
+      const res = await api.get("/products");
+      setProducts(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const addItem = () => {
+    setItems([
+      ...items,
+      {
+        product_id: "",
+        quantity: ""
+      }
+    ]);
+  };
+
+  const removeItem = (index) => {
+
+    const updatedItems =
+      items.filter((_, i) => i !== index);
+
+    setItems(updatedItems);
+  };
+
+  const updateItem = (
+    index,
+    field,
+    value
+  ) => {
+
+    const updatedItems = [...items];
+
+    updatedItems[index][field] = value;
+
+    setItems(updatedItems);
   };
 
   const createOrder = async (e) => {
@@ -48,23 +88,34 @@ function Orders() {
 
       await api.post("/orders", {
         customer_id: Number(customerId),
-        items: [
-          {
-            product_id: Number(productId),
-            quantity: Number(quantity)
-          }
-        ]
+
+        items: items.map((item) => ({
+          product_id: Number(
+            item.product_id
+          ),
+          quantity: Number(
+            item.quantity
+          )
+        }))
       });
 
       setCustomerId("");
-      setProductId("");
-      setQuantity("");
+
+      setItems([
+        {
+          product_id: "",
+          quantity: ""
+        }
+      ]);
 
       fetchOrders();
       fetchProducts();
 
     } catch (error) {
-      alert(error.response?.data?.detail);
+      alert(
+        error.response?.data?.detail ||
+        "Failed to create order"
+      );
     }
   };
 
@@ -91,7 +142,11 @@ function Orders() {
 
         <select
           value={customerId}
-          onChange={(e) => setCustomerId(e.target.value)}
+          onChange={(e) =>
+            setCustomerId(
+              e.target.value
+            )
+          }
         >
           <option value="">
             Select Customer
@@ -105,40 +160,91 @@ function Orders() {
               {customer.name}
             </option>
           ))}
+
         </select>
 
-        <br /><br />
+        <br />
+        <br />
 
-        <select
-          value={productId}
-          onChange={(e) => setProductId(e.target.value)}
-        >
-          <option value="">
-            Select Product
-          </option>
+        {items.map((item, index) => (
 
-          {products.map((product) => (
-            <option
-              key={product.id}
-              value={product.id}
+          <div
+            key={index}
+            style={{
+              border: "1px solid #ccc",
+              padding: "10px",
+              marginBottom: "10px"
+            }}
+          >
+
+            <select
+              value={item.product_id}
+              onChange={(e) =>
+                updateItem(
+                  index,
+                  "product_id",
+                  e.target.value
+                )
+              }
             >
-              {product.name}
-            </option>
-          ))}
-        </select>
+              <option value="">
+                Select Product
+              </option>
 
-        <br /><br />
+              {products.map((product) => (
+                <option
+                  key={product.id}
+                  value={product.id}
+                >
+                  {product.name}
+                </option>
+              ))}
 
-        <input
-          type="number"
-          placeholder="Quantity"
-          value={quantity}
-          onChange={(e) =>
-            setQuantity(e.target.value)
-          }
-        />
+            </select>
 
-        <br /><br />
+            <input
+              type="number"
+              placeholder="Quantity"
+              value={item.quantity}
+              onChange={(e) =>
+                updateItem(
+                  index,
+                  "quantity",
+                  e.target.value
+                )
+              }
+              style={{
+                marginLeft: "10px"
+              }}
+            />
+
+            {items.length > 1 && (
+              <button
+                type="button"
+                onClick={() =>
+                  removeItem(index)
+                }
+                style={{
+                  marginLeft: "10px"
+                }}
+              >
+                Remove
+              </button>
+            )}
+
+          </div>
+
+        ))}
+
+        <button
+          type="button"
+          onClick={addItem}
+        >
+          Add Product
+        </button>
+
+        <br />
+        <br />
 
         <button type="submit">
           Create Order
@@ -148,16 +254,21 @@ function Orders() {
 
       <hr />
 
-      <table border="1" cellPadding="10">
+      <table
+        border="1"
+        cellPadding="10"
+      >
 
         <thead>
+
           <tr>
             <th>ID</th>
             <th>Customer ID</th>
             <th>Total Amount</th>
-            <th>Items</th>
+            <th>Products ordered</th>
             <th>Action</th>
           </tr>
+
         </thead>
 
         <tbody>
@@ -168,13 +279,32 @@ function Orders() {
 
               <td>{order.id}</td>
 
-              <td>{order.customer_id}</td>
-
-              <td>{order.total_amount}</td>
+              <td>
+                {order.customer_id}
+              </td>
 
               <td>
-                {order.items.length}
+                {order.total_amount}
               </td>
+
+              <td>
+              {order.items.map((item) => {
+
+                const product = products.find(
+                  (p) => p.id === item.product_id
+                );
+
+                return (
+                  <div key={item.id}>
+                    {product
+                      ? product.name
+                      : `Product ${item.product_id}`}
+                    {" "}
+                    × {item.quantity}
+                  </div>
+                );
+              })}
+            </td>
 
               <td>
 
