@@ -64,7 +64,7 @@ function Customers() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div className="container">
 
       <h2>Customers</h2>
 

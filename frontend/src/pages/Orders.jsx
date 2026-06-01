@@ -83,7 +83,7 @@ function Orders() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div className="container">
 
       <h2>Orders</h2>
 

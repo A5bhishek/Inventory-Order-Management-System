@@ -4,16 +4,65 @@ function Navbar() {
   return (
     <nav
       style={{
+        background: "#2563eb",
+        padding: "16px 24px",
         display: "flex",
-        gap: "20px",
-        padding: "15px",
-        background: "#f4f4f4",
+        alignItems: "center",
+        gap: "24px",
       }}
     >
-      <Link to="/">Dashboard</Link>
-      <Link to="/products">Products</Link>
-      <Link to="/customers">Customers</Link>
-      <Link to="/orders">Orders</Link>
+      <h2
+        style={{
+          color: "white",
+          marginRight: "30px",
+        }}
+      >
+        InventoryMS
+      </h2>
+
+      <Link
+        style={{
+          color: "white",
+          textDecoration: "none",
+          fontWeight: "500",
+        }}
+        to="/"
+      >
+        Dashboard
+      </Link>
+
+      <Link
+        style={{
+          color: "white",
+          textDecoration: "none",
+          fontWeight: "500",
+        }}
+        to="/products"
+      >
+        Products
+      </Link>
+
+      <Link
+        style={{
+          color: "white",
+          textDecoration: "none",
+          fontWeight: "500",
+        }}
+        to="/customers"
+      >
+        Customers
+      </Link>
+
+      <Link
+        style={{
+          color: "white",
+          textDecoration: "none",
+          fontWeight: "500",
+        }}
+        to="/orders"
+      >
+        Orders
+      </Link>
     </nav>
   );
 }
