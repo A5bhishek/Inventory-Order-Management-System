@@ -1,13 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from pydantic import Field
-
 
 class ProductCreate(BaseModel):
     name: str
     sku: str
-    price: float
-    quantity: int
-
+    price: float = Field(gt=0)
+    quantity: int = Field(ge=0)
 
 class ProductResponse(ProductCreate):
     id: int
@@ -18,7 +16,7 @@ class ProductResponse(ProductCreate):
 
 class CustomerCreate(BaseModel):
     name: str
-    email: str
+    email: EmailStr
     phone: str
 
 
