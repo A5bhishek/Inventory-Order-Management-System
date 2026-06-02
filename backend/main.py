@@ -1,5 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+
 
 from database import engine, get_db
 
@@ -142,8 +144,9 @@ def update_product(
     return db_product
 
 @app.delete("/products/{product_id}")
-def delete_product(product_id: int,
-                   db: Session = Depends(get_db)):
+def delete_product(
+        product_id: int,
+        db: Session = Depends(get_db)):
 
     product = db.query(Product).filter(
         Product.id == product_id
@@ -155,10 +158,23 @@ def delete_product(product_id: int,
             detail="Product not found"
         )
 
-    db.delete(product)
-    db.commit()
+    try:
 
-    return {"message": "Product deleted"}
+        db.delete(product)
+        db.commit()
+
+    except IntegrityError:
+
+        db.rollback()
+
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot delete product used in existing orders"
+        )
+
+    return {
+        "message": "Product deleted"
+    }
 
 @app.post("/customers",
           response_model=CustomerResponse)
@@ -227,10 +243,23 @@ def delete_customer(
             detail="Customer not found"
         )
 
-    db.delete(customer)
-    db.commit()
+    try:
 
-    return {"message": "Customer deleted"}
+        db.delete(customer)
+        db.commit()
+
+    except IntegrityError:
+
+        db.rollback()
+
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot delete customer with existing orders"
+        )
+
+    return {
+        "message": "Customer deleted"
+    }
 
 @app.post(
     "/orders",
