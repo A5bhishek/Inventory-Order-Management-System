@@ -67,7 +67,10 @@ function Products() {
       fetchProducts();
 
     } catch (error) {
-      console.log(error);
+      alert(
+        error.response?.data?.detail ||
+        "Cannot delete product. It may be linked to existing orders."
+      );
     }
   };
 

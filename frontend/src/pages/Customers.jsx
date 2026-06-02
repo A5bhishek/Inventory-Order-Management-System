@@ -59,8 +59,11 @@ function Customers() {
       fetchCustomers();
 
     } catch (error) {
-      console.log(error);
-    }
+        alert(
+          error.response?.data?.detail ||
+          "Cannot delete customer. Customer has existing orders."
+        );
+      }
   };
 
   return (
